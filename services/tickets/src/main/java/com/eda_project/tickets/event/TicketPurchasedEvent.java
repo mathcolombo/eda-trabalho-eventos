@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -18,5 +19,5 @@ public class TicketPurchasedEvent {
     private BigDecimal amount;
     private String eventType;
     private String messageId;
-    private String timestamp;
+    private LocalDateTime timestamp;
 }

@@ -15,12 +15,12 @@ public class EventCreatedEvent {
 
     private Long eventId;
     private String name;
-    private String eventDate;
-    private Integer maxCapacity;
-    private BigDecimal basePrice;
+    private LocalDateTime eventDate;
+    private Integer totalCapacity;
+    private BigDecimal price;
     private String eventType;
     private String messageId;
-    private String timestamp;
+    private LocalDateTime timestamp;
 
     public EventCreatedEvent(
             Long eventId,
@@ -30,11 +30,11 @@ public class EventCreatedEvent {
             BigDecimal basePrice) {
         this.eventId = eventId;
         this.name = name;
-        this.eventDate = eventDate.toString();
-        this.maxCapacity = maxCapacity;
-        this.basePrice = basePrice;
+        this.eventDate = eventDate;
+        this.totalCapacity = maxCapacity;
+        this.price = basePrice;
         this.eventType = "EVENT_CREATED";
         this.messageId = UUID.randomUUID().toString();
-        this.timestamp = LocalDateTime.now().toString();
+        this.timestamp = LocalDateTime.now();
     }
 }

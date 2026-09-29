@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -13,10 +14,10 @@ public class EventCreatedEvent {
 
     private Long eventId;
     private String name;
-    private String eventDate;
-    private Integer maxCapacity;
-    private BigDecimal basePrice;
+    private LocalDateTime eventDate;
+    private Integer totalCapacity;
+    private BigDecimal price;
     private String eventType;
     private String messageId;
-    private String timestamp;
+    private LocalDateTime timestamp;
 }

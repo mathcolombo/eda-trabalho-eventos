@@ -55,11 +55,11 @@ public class TicketService {
         TicketInventory inventory = new TicketInventory();
         inventory.setEventId(event.getEventId());
         inventory.setEventName(event.getName());
-        inventory.setTotalCapacity(event.getMaxCapacity());
+        inventory.setTotalCapacity(event.getTotalCapacity());
         inventory.setReservedTickets(0);
         inventory.setConfirmedTickets(0);
         inventory.setCheckedInTickets(0);
-        inventory.setBasePrice(event.getBasePrice());
+        inventory.setBasePrice(event.getPrice());
         inventory.setCreatedAt(now);
         inventory.setUpdatedAt(now);
 
@@ -117,7 +117,7 @@ public class TicketService {
                 savedTicket.getPrice(),
                 "TICKET_PURCHASED",
                 UUID.randomUUID().toString(),
-                LocalDateTime.now().toString());
+                LocalDateTime.now());
 
         rabbitTemplate.convertAndSend(
                 ticketsExchange,
@@ -129,7 +129,10 @@ public class TicketService {
         log.info("TICKET_PURCHASED publicado: ticketId={}", savedTicket.getId());
 
         if (reserved + 1 + confirmed >= inventory.getTotalCapacity()) {
-            publishSoldOut(savedTicket.getEventId());
+            publishSoldOut(
+                    savedTicket.getEventId(),
+                    inventory.getEventName(),
+                    reserved + 1 + confirmed);
         }
 
         return savedTicket;
@@ -186,9 +189,12 @@ public class TicketService {
         TicketCheckedEvent event = new TicketCheckedEvent(
                 checkedTicket.getId(),
                 checkedTicket.getEventId(),
+            checkedTicket.getCustomerEmail(),
+            "MAIN_GATE",
+            LocalDateTime.now(),
                 "TICKET_CHECKED",
                 UUID.randomUUID().toString(),
-                LocalDateTime.now().toString());
+            LocalDateTime.now());
         rabbitTemplate.convertAndSend(eventsExchange, ticketCheckedRoutingKey, event);
 
         log.info("Ticket com check-in: ticketId={} eventId={}",
@@ -196,12 +202,17 @@ public class TicketService {
         return checkedTicket;
     }
 
-    private void publishSoldOut(Long eventId) {
+    private void publishSoldOut(
+            Long eventId,
+            String eventName,
+            Integer totalTicketsSold) {
         EventSoldOutEvent event = new EventSoldOutEvent(
                 eventId,
-                "EVENT_SOLD_OUT",
+                eventName,
+                totalTicketsSold,
+                "EVENT_SOLDOUT",
                 UUID.randomUUID().toString(),
-                LocalDateTime.now().toString());
+                LocalDateTime.now());
         rabbitTemplate.convertAndSend(eventsExchange, eventSoldOutRoutingKey, event);
         log.info("EVENT_SOLD_OUT publicado: eventId={}", eventId);
     }
