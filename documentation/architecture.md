@@ -72,7 +72,7 @@ graph TB
 - Banco de Dados: SQLite (eventsdb)
 - Responsabilidades:
     - Manter o catálogo de eventos (nome, data, capacidade máxima, preço base).
-    - Controlar o estado de disponibilidade do evento (ACTIVE, SOLD_OUT, CANCELLED).
+    - Controlar o estado de disponibilidade do evento (ATIVO, ESGOTADO, CANCELADO) - AQUI É BR.
     - Atualizar contadores de presença física e métricas de capacidade geral.
 - Mensageria:
     - Produtor: EventCreated (na exchange events.topic).

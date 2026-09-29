@@ -33,4 +33,4 @@ build/
 .vscode/
 
 ### Database ###
-/data/
+/data/*.db
