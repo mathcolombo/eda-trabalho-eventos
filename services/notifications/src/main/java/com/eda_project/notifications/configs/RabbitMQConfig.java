@@ -4,10 +4,14 @@ import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.DefaultClassMapper;
 import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 public class RabbitMQConfig {
@@ -82,9 +86,24 @@ public class RabbitMQConfig {
     // Conversor JSON e RabbitTemplate
     @Bean
     public MessageConverter jsonMessageConverter() {
-        return new JacksonJsonMessageConverter();
-    }
+        JacksonJsonMessageConverter converter = new JacksonJsonMessageConverter();
 
+        DefaultClassMapper classMapper = new DefaultClassMapper();
+        classMapper.setTrustedPackages("*");
+
+        Map<String, Class<?>> idClassMapping = new HashMap<>();
+
+        idClassMapping.put("com.eda_project.payments.events.PaymentConfirmedEvent",
+                com.eda_project.notifications.events.PaymentConfirmedEvent.class);
+
+        idClassMapping.put("PAYMENT_CONFIRMED",
+                com.eda_project.notifications.events.PaymentConfirmedEvent.class);
+
+        classMapper.setIdClassMapping(idClassMapping);
+        converter.setClassMapper(classMapper);
+
+        return converter;
+    }
     @Bean
     public RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory) {
         RabbitAdmin admin = new RabbitAdmin(connectionFactory);
