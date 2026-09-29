@@ -56,6 +56,8 @@ public class PaymentsService {
                 savedPayment.getId(),
                 savedPayment.getTicketId(),
                 savedPayment.getEventId(),
+                savedPayment.getCustomerEmail(),
+                savedPayment.getAmount(),
                 savedPayment.getStatus().name()
         );
 

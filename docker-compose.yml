@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   rabbitmq:
     image: rabbitmq:3-management-alpine
@@ -15,6 +17,42 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  payments-service:
+    build:
+      context: ./services/payments
+      dockerfile: Dockerfile
+    container_name: payments-service
+    ports:
+      - "8083:8083"
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: admin
+      RABBITMQ_PASSWORD: admin
+    volumes:
+      - ./services/payments/data:/app/data
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  notifications-service:
+    build:
+      context: ./services/notifications
+      dockerfile: Dockerfile
+    container_name: notifications-service
+    ports:
+      - "8084:8084"
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: admin
+      RABBITMQ_PASSWORD: admin
+    volumes:
+      - ./services/notifications/data:/app/data
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
 
 volumes:
   rabbitmq_data:
