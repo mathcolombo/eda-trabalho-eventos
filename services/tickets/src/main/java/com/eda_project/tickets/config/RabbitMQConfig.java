@@ -1,7 +1,8 @@
-package com.eda_project.events.config;
+package com.eda_project.tickets.config;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
@@ -17,57 +18,60 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMQConfig {
 
     @Value("${rabbitmq.exchange.events}")
-    private String exchangeName;
+    private String eventsExchangeName;
+
+    @Value("${rabbitmq.exchange.tickets}")
+    private String ticketsExchangeName;
+
+    @Value("${rabbitmq.exchange.payments}")
+    private String paymentsExchangeName;
+
+    @Value("${rabbitmq.queue.event-created}")
+    private String eventCreatedQueueName;
+
+    @Value("${rabbitmq.queue.payment-confirmed}")
+    private String paymentConfirmedQueueName;
 
     @Bean
     public TopicExchange eventsExchange() {
-        return new TopicExchange(exchangeName);
+        return new TopicExchange(eventsExchangeName);
+    }
+
+    @Bean
+    public DirectExchange ticketsExchange() {
+        return new DirectExchange(ticketsExchangeName);
     }
 
     @Bean
     public FanoutExchange paymentsExchange() {
-        return new FanoutExchange("payments.fanout");
+        return new FanoutExchange(paymentsExchangeName);
     }
 
     @Bean
-    public Queue paymentConfirmedEventsQueue() {
-        return new Queue("events.payment-confirmed.queue", true);
+    public Queue eventCreatedQueue() {
+        return new Queue(eventCreatedQueueName, true);
     }
 
     @Bean
-    public Binding paymentConfirmedEventsBinding(
-            Queue paymentConfirmedEventsQueue,
+    public Binding eventCreatedBinding(
+            Queue eventCreatedQueue,
+            TopicExchange eventsExchange) {
+        return BindingBuilder.bind(eventCreatedQueue)
+                .to(eventsExchange)
+                .with("event.created");
+    }
+
+    @Bean
+    public Queue paymentConfirmedQueue() {
+        return new Queue(paymentConfirmedQueueName, true);
+    }
+
+    @Bean
+    public Binding paymentConfirmedBinding(
+            Queue paymentConfirmedQueue,
             FanoutExchange paymentsExchange) {
-        return BindingBuilder.bind(paymentConfirmedEventsQueue)
+        return BindingBuilder.bind(paymentConfirmedQueue)
                 .to(paymentsExchange);
-    }
-
-    @Bean
-    public Queue ticketCheckedEventsQueue() {
-        return new Queue("events.checkin.queue", true);
-    }
-
-    @Bean
-    public Binding ticketCheckedEventsBinding(
-            Queue ticketCheckedEventsQueue,
-            TopicExchange eventsExchange) {
-        return BindingBuilder.bind(ticketCheckedEventsQueue)
-                .to(eventsExchange)
-                .with("ticket.checked");
-    }
-
-    @Bean
-    public Queue eventSoldOutQueue() {
-        return new Queue("events.soldout.queue", true);
-    }
-
-    @Bean
-    public Binding eventSoldOutBinding(
-            Queue eventSoldOutQueue,
-            TopicExchange eventsExchange) {
-        return BindingBuilder.bind(eventSoldOutQueue)
-                .to(eventsExchange)
-                .with("event.soldout");
     }
 
     @Bean

@@ -20,7 +20,7 @@ public class EventCreatedEvent {
     private BigDecimal basePrice;
     private String eventType;
     private String messageId;
-    private LocalDateTime timestamp;
+    private String timestamp;
 
     public EventCreatedEvent(
             Long eventId,
@@ -35,6 +35,6 @@ public class EventCreatedEvent {
         this.basePrice = basePrice;
         this.eventType = "EVENT_CREATED";
         this.messageId = UUID.randomUUID().toString();
-        this.timestamp = LocalDateTime.now();
+        this.timestamp = LocalDateTime.now().toString();
     }
 }

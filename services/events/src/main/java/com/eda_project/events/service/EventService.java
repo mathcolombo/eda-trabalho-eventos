@@ -52,25 +52,58 @@ public class EventService {
                 eventCreatedRoutingKey,
                 eventMessage);
 
-        log.info("Event created: id={} name={}",
+        log.info("Evento criado: id={} name={}",
                 savedEvent.getId(), savedEvent.getName());
-        log.info("EVENT_CREATED published: eventId={}", savedEvent.getId());
+        log.info("EVENT_CREATED publicado: eventId={}", savedEvent.getId());
 
         return savedEvent;
     }
 
+    @Transactional
+    public void confirmTicket(Long eventId) {
+        eventRepository.findById(eventId).ifPresent(event -> {
+            int confirmed = event.getConfirmedTickets() == null
+                    ? 0
+                    : event.getConfirmedTickets();
+            event.setConfirmedTickets(confirmed + 1);
+            event.setUpdatedAt(LocalDateTime.now());
+            eventRepository.save(event);
+        });
+    }
+
+    @Transactional
+    public void registerCheckIn(Long eventId) {
+        eventRepository.findById(eventId).ifPresent(event -> {
+            int checkedIn = event.getCheckedInTickets() == null
+                    ? 0
+                    : event.getCheckedInTickets();
+            event.setCheckedInTickets(checkedIn + 1);
+            event.setUpdatedAt(LocalDateTime.now());
+            eventRepository.save(event);
+        });
+    }
+
+    @Transactional
+    public void markSoldOut(Long eventId) {
+        eventRepository.findById(eventId).ifPresent(event -> {
+            event.setStatus(EventStatus.ESGOTADO);
+            event.setUpdatedAt(LocalDateTime.now());
+            eventRepository.save(event);
+        });
+    }
+
     private void validate(Event event) {
         if (event.getName() == null || event.getName().isBlank()) {
-            throw new IllegalArgumentException("Event name is required");
+            throw new IllegalArgumentException("Nome do evento e obrigatorio");
         }
         if (event.getEventDate() == null) {
-            throw new IllegalArgumentException("Event date is required");
+            throw new IllegalArgumentException("Data do evento e obrigatoria");
         }
         if (event.getMaxCapacity() == null || event.getMaxCapacity() <= 0) {
-            throw new IllegalArgumentException("Maximum capacity must be greater than zero");
+            throw new IllegalArgumentException("A capacidade maxima deve ser maior que zero");
         }
         if (event.getBasePrice() == null || event.getBasePrice().signum() < 0) {
-            throw new IllegalArgumentException("Base price cannot be negative");
+            throw new IllegalArgumentException("O preco base nao pode ser negativo");
         }
     }
 }
