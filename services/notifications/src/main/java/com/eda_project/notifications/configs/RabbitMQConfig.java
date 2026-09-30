@@ -95,9 +95,24 @@ public class RabbitMQConfig {
 
         idClassMapping.put("com.eda_project.payments.events.PaymentConfirmedEvent",
                 com.eda_project.notifications.events.PaymentConfirmedEvent.class);
-
         idClassMapping.put("PAYMENT_CONFIRMED",
                 com.eda_project.notifications.events.PaymentConfirmedEvent.class);
+        idClassMapping.put("com.eda_project.events.event.EventCreatedEvent",
+                com.eda_project.notifications.events.EventCreatedEvent.class);
+        idClassMapping.put("EVENT_CREATED",
+                com.eda_project.notifications.events.EventCreatedEvent.class);
+        idClassMapping.put("com.eda_project.tickets.event.EventSoldOutEvent",
+                com.eda_project.notifications.events.EventSoldOutEvent.class);
+        idClassMapping.put("com.eda_project.events.event.EventSoldOutEvent",
+                com.eda_project.notifications.events.EventSoldOutEvent.class);
+        idClassMapping.put("EVENT_SOLDOUT",
+                com.eda_project.notifications.events.EventSoldOutEvent.class);
+        idClassMapping.put("EVENT_SOLD_OUT",
+                com.eda_project.notifications.events.EventSoldOutEvent.class);
+        idClassMapping.put("com.eda_project.tickets.event.TicketCheckedEvent",
+                com.eda_project.notifications.events.TicketCheckedEvent.class);
+        idClassMapping.put("TICKET_CHECKED",
+                com.eda_project.notifications.events.TicketCheckedEvent.class);
 
         classMapper.setIdClassMapping(idClassMapping);
         converter.setClassMapper(classMapper);

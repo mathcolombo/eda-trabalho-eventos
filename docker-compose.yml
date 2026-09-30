@@ -18,6 +18,42 @@ services:
       timeout: 5s
       retries: 5
 
+  events-service:
+    build:
+      context: ./services/events
+      dockerfile: Dockerfile
+    container_name: events-service
+    ports:
+      - "8081:8081"
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: admin
+      RABBITMQ_PASSWORD: admin
+    volumes:
+      - ./services/events/data:/app/data
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  tickets-service:
+    build:
+      context: ./services/tickets
+      dockerfile: Dockerfile
+    container_name: tickets-service
+    ports:
+      - "8082:8082"
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: admin
+      RABBITMQ_PASSWORD: admin
+    volumes:
+      - ./services/tickets/data:/app/data
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
   payments-service:
     build:
       context: ./services/payments
